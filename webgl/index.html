@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Computer Graphics</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css">
+
+    <script type="text/javascript" src="js/webgl-debug.js"></script>
+    <script type="text/javascript" src="js/shaderUtils.js"></script>
+    <script type="text/javascript" src="js/gl-matrix.js"></script>
+    <script type="text/javascript" src="js/wirecube.js"></script>
+    <script type="text/javascript" src="js/solidSphere.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+
+</head>
+
+<body>
+
+<div class="loading bg-grey-dark opacity-50"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANcSURBVGhD7ZlLbA1hGIZPG61rWpUo2rKgJGUhcQlWDRI0DVIRBBGtpNKVS7CxsGgs2LjVbdGVCIlEWiQ2upHGSohGgriGSAQLiqSlzvF80/ecOtGc9Nzm/CPnSd7MzPv9l++fOf+cmX9CeRIQiUTKpAJZbhIOh+egJtSOHqOP6DeJx5B3F51BG7DKVD03kEQJSTSj+5bg3xD7hT4gG8wT9NY8hT047kPXUR2H/l0hOium04Oo18sE2H+KTqGNqEJF46BYEbEatjvZXmL7xeoaHD9E9SqaPehkDXquTvvRFVSrcFJQbyzajB54owD2O1GlimQO2i6k4VYUVkd3UI3CaUNbDeiN2ra5skqh9KHNcTR4W433oi0KZRTatStyUf0MsGlWKHVoZAyNdanRF2ieQlmDPraifvV5QHbyUN8m3Q011IMmKZR16Gsl+oGMbbKTg4pHlbxN2qmyfYN+16EBZDeLBbJHBhVqVfkrqpbtO/S9TyfxJZsJshNDYZtMr1Vxl+ycQAoF5BD9GR+TnRgK7lcFu/Pk/BmGHGaQyzf0EyX+NVBgPLJHAGOu7JxDLkd0UttlDQ8F9qpghywnIKWJ5GTz0SZ0uex/IfhIA1gmyxnI6axy2yMrHgKzVeCZLKewk6r87smKh0CjCoxstvsMqdnz2Cdkj+olsoegQCmBQ2iyLOcgt2s6yatlBQsSP6wBDD8PXIfEN2kAbbKGwC/UrrOQ+HIN4LKsQTBGo1co8R9FjiG/RRrALVmD4JUq0CPLSUjR3k+uoviXKgLFGsB7WcGD5L17LOMokhUsSL5bV8GZh7ikIPHTGkCjrGBB4tG3sCZZwYMLYHcjtxdi87gOc8BeK8+hxbKCBYnP193IViZGtpThGiTfqUFckBUsSLwCfdYgtssOFiReh6JLeytk+wZ9TtNu6tBIi65Ct6ysQ3e2GhddZm+QnTo0Uo98uyOR90wlbwtss2RnFtrP6hMria9F03WYWWj4JLK1yuMo7RUMToa/n1tJejfq02X+jtpQ0hOOOnaWu5DRItsf6LAK2Qfr6EBOKBQDr5LQQmmUbA9iU1D0g+E7tEQhf6HjcmRf6KtkeXBcjWJf6tlvVcgDy+40O9B69uMG5wQkZR/Dz6ObqAMtVSjPf0Yo9AdfxSJhMURyRQAAAABJRU5ErkJggg=="></div>
+
+<div class="w-full p-5 font-mono text-teal-dark">
+
+
+    <h1 class="text-center">TIC TAC TOE</h1>
+
+    <canvas id="myCanvas" class="block mt-4 mx-auto rounded bg-grey-lighter" width="800" height="600"></canvas>
+
+    <button id="start-game" class="block mt-4 bg-teal-dark hover:bg-teal-darker text-white py-2 px-4 rounded mx-auto">Start Game</button>
+
+    <div class="game-info mx-auto mt-5">
+
+        <p>Active Cube: <code class="activeCube">0, 0, 0</code></p>
+
+        <p class="mt-5">Player1:</p>
+        <ul class="playerOneStats">
+
+        </ul>
+        <p class="mt-5">Player2:</p>
+        <ul class="playerTwoStats">
+
+        </ul>
+
+    </div>
+
+
+    <div class="instruction-box text-white m-4 rounded opacity-75">
+
+        <div class="close m-2"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJiSURBVGhD7ZlBShxBGIUnmFWy0FxADCIuQqKQKyQLIXgAcxCJKw+guYMYkmyF7EIg6CaCbuINAgku1F1WjjP5njzDDHaNXe1U1yzqg5+q+fv90+85092KnUIhIf1+f6bX671gfZmjOPci60PbqQ9DcwzvUV32WcHDGfWO7ZTtjQahzJ96+ILlO+vXTHVMXdrLri2OBuGeBz6yPHI7G/hYov7Y06rb1aCZRtSlzqnHbmcHL28d4JNb1SB4ZuE3tyYC/MzLFxy5VQ3C51KxfnFrIsDSrH39dKuaEiARJUBukgVA9xT5tF9G4/Pd+YRFM/4AMk/9on4wEh2CmVfM/qV22D9wuxKOjz8AMj30ZF76qBBor817dt3tIMjSfIWQDoY41GsfCoImyrxAmu4iRl47BMeizQvk6QIIRhRC5oMh6DUyLxhJG0AwFgzBvrF5wVj6AILRWyFYX1ONzQtG2wkgGB8McULdy7xgvL0AgrdQiBO9l9n0oUYw324A5v9/bQT7oWsiFmbbC8DsoPlN9kPXhGVRMNfaRXzrbsM2eHeqCzPpAzAWvFXSulcI9GkDMHLnfZ5DjUOgTRcAee2HFJJGIdClCYA0+gmLNDoEmvEHkJaKMn8DI4MhDliy/D0whW6HijJ/A/MKcUCtuBUEbbKv0Mif3LjgPOku4jYoAXJTAuQmJsCChcduTQRYWravfbeqQaN7u/4ndUktuZ0dvLx3gC23wiDasPg3tcZWH9+TTLWMh23qitJTf842wyDSp/CBdWKQeeqNLdaDgVXqM6XfWY5yFOfep7bYz9pWoVAYotP5B7BEVwpesdItAAAAAElFTkSuQmCC"></div>
+        <div class="question pt-1 mx-1 active"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAVnSURBVGhD7ZpbiFVVHMbHyctoY9MUWEnYZSAbnyoTki4PUmomqT3YdWpeFLrgZPTQg9AFyYmyMGEoMBVLS3JAsgiLbl7qIdKUSIhuphWZkUWips34+/b5zpw57DnT2pc5zoMffKy1v////611zuy9z9prT81pVEBXV9eI7u7uRnOI5cEJJtsMH4Lr4S54hEmXAe0A/AQuh7chNbr81IAJNDCRhXB3NMNeQPsbfgf1YfbAn+BxhyNwfBR2wps5rN5fiMHqGfRJ2kOaiMCxPkS7JgMvcGoZiA8j1kzbSvsqbe/6HfAWpw4cGGQm3OtB/4Ur6U50OBGoHQnvgDvkJ9DfCMc6JT/grW/vedjlgTbAixzOBOyG4DUH/mhvXStTHc4OPHXKbLb5QTjHoVyB/Si8X/Y4J2jmO5QeNv3UpjrPxzk0YGCce+Axj/mo5eSgfjgGH9joM5qq3fYYbyo8DIW7LScDhS948vrmGyxXDYx7KzwBdbu9ynIYKNDdRviDyac+bag/E472YWJQ+4i/xG9p6i33DyVSULxVzrIcDGomULqa9jd5GIc4fhNe47QgUKc71NsFi+52y/2DgqeUTdtpKRjUtMCj0XB9gNh/NI85PQjkj6PuH6jfnSbLfYPks0n6U8n0L7YcBPKvo063vwj098M3zOgv2guzXRYE8p9QET4rLPUNEorn3EpLwaBGd6oI9F+HIx1SbAR8xWHF9zgUBEoaqdH66hgcYzkOgrs8QKKrnvwm1Qn099OMcqgHaHXEDkRJgP4lDgWB/A7XLbBUDgK6+JTwlaVgUDMJ7oT6hpZZjoHYexpDoH+95SCQP9l12yyVg8CDTnjGUmJQPhQO92EMeG/XGAL9RH9lSmqp0VLmOIzfmhHX23iapVyB72WweJFrKT3MoWBQv0HFtPHFHmLx/M99OYut7ucfyl+g/6xDiUDdIte3WSoB8Qj8y4e5At950cwB/Z9pUq2rqL3dHi9aKgCtzoEfLOUGbC/H97D9hekOJQa1U+yz1lIBCOc6sNtSLsBSt84v5S3Qf86hVKB+kn02WSoArcGBry3lAvyWyleg/zlNxTtUCPC41l7lyxy0Wgf2WcoMvMZDLUnkqyXxeIdSA4/p8gOrLZVAUM+i2vpIfHvrC3i1FcaKPkCH5UzAar79nrZUAuIWB5stZQI+y+RnZH++BXgWT8lWSyUQXF4xmAL4RWsXgf5dljMBn+iXnPZKSyUgartPwTWWMgEfLfBuFOmfYzk18DgL6pngIJ61lktA1JJVuwH6ma+zPGjA3FqYl77gdZbiINjppDstpQY22pW+VMSv59kgLfAo7pDMsBQHQW20KukLmkwbrtR/LC8Bv8WWU4H6q+2jJ7uhluMgqEXXTidn2oGjfqt8BPpLLKcC9e/Y5wFLlUHSDCdrrzL2ZBUK6nP5AJTPtsf3NGHXJskbXfSSpcSg9j4s2kX6N1hOBOrOg794LuHb7ySPhdG+Dm2L5aqCobW1+ZHmAOJLh/8DxdOgtvb0nDvFclXAhHUtvqaZ02prM92pTPH9NtFG60zLAwqG07uINR53H7zQoXTA4GEo6GF6Ib4D9j4L7/MZ431PXhtjExzKBox6tgxpN9Hk/p4A31nwV4+R/7sIDCdi/I0H0F7l43QzvzOw77vyFeivokl9++4XGNdD3RaLb1C03dcBtekUX2BVAPmj4b0wWh4I9PVatirXmSbQBFfA6IMI9H+Heu+7CM5F0kpU3+5kqDcu8+BSuB32vDOmvxdqU636C0gGHgMXwG2w7EV2fyBXO2xroX71z7DdqQWT0WlxE2yD+neCdfAtqFeyq+ASJtsKr4DBp9tpDG7U1JwEbb2pITr3pvYAAAAASUVORK5CYII="></div>
+
+        <div class="instructions">
+
+            <h3>Instructions</h3>
+
+            <div class="keys mt-5">
+
+                <div class="key mt-2"><code>I</code>: UP</div>
+                <div class="key mt-2"><code>K</code>: DOWN</div>
+                <div class="key mt-2"><code>J</code>: LEFT</div>
+                <div class="key mt-2"><code>L</code>: RIGHT</div>
+
+                <div class="key mt-5"><code>E</code>: ONE LAYER BACK</div>
+                <div class="key mt-2"><code>D</code>: ONE LAYER FORWARDS</div>
+
+                <div class="key mt-5"><code>SPACE</code>: PLACE SPHERE</div>
+
+                <div class="key mt-5"><code>H</code>: TOGGLE INSTRUCTIONS</div>
+                <div class="key mt-2"><code>P</code>: PAUSE MUSIC</div>
+                <div class="key mt-2"><code>R</code>: TOGGLE ROTATION</div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<audio controls autoplay hidden>
+    <source src="audio/song.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+</body>
+
+</html>
