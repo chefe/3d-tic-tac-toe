@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c70e8fcd-98c9-45bd-97d7-a345137cb52a" name="Default" comment="" />
+    <list default="true" id="c70e8fcd-98c9-45bd-97d7-a345137cb52a" name="Default" comment="translate cubes instead of multiple instances... cause was not needed :P">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -153,14 +155,35 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-1008642976">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.3" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="js" value="181" />
+          <entry key="txt" value="80" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JavaScript" value="181" />
+          <entry key="PLAIN_TEXT" value="80" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/3DTicTacToe.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
-              <caret line="519" column="60" lean-forward="true" selection-start-line="519" selection-start-column="60" selection-end-line="519" selection-end-column="60" />
+            <state relative-caret-position="-687">
+              <caret line="200" lean-forward="true" selection-start-line="200" selection-end-line="200" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -230,6 +253,9 @@
       <replace>1, 1, 1, 0.2</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -262,6 +288,7 @@
     <option name="width" value="1680" />
     <option name="height" value="1027" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -272,8 +299,8 @@
         <subPane>
           <expand>
             <path>
-              <item name="webgl_start" type="b2602c69:ProjectViewProjectNode" />
-              <item name="webgl_start" type="462c0819:PsiDirectoryNode" />
+              <item name="webgl" type="b2602c69:ProjectViewProjectNode" />
+              <item name="webgl" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -301,7 +328,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.Default Exercise1.html">
+  <component name="RunManager" selected="JavaScript Debug.3DTicTacToe.html (1)">
     <configuration default="true" type="BashConfigurationType" factoryName="Bash">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="INTERPRETER_PATH" value="/bin/bash" />
@@ -312,6 +339,9 @@
       <module name="" />
       <envs />
       <method />
+    </configuration>
+    <configuration name="3DTicTacToe.html (1)" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/webgl/3DTicTacToe.html">
+      <method v="2" />
     </configuration>
     <configuration name="3DTicTacToe.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/webgl_start/3DTicTacToe.html">
       <method v="2" />
@@ -339,9 +369,11 @@
       <item itemvalue="JavaScript Debug.Default Exercise1.html" />
       <item itemvalue="JavaScript Debug.3DTicTacToe.html" />
       <item itemvalue="Node.js.3DTicTacToe.js" />
+      <item itemvalue="JavaScript Debug.3DTicTacToe.html (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.3DTicTacToe.html (1)" />
         <item itemvalue="JavaScript Debug.Default Exercise1.html" />
         <item itemvalue="JavaScript Debug.3DTicTacToe.html" />
         <item itemvalue="Node.js.3DTicTacToe.js" />
@@ -388,14 +420,23 @@
       <workItem from="1543515803846" duration="643000" />
       <workItem from="1543522141920" duration="3958000" />
       <workItem from="1543564625770" duration="330000" />
+      <workItem from="1543570925292" duration="1048000" />
     </task>
+    <task id="LOCAL-00001" summary="translate cubes instead of multiple instances... cause was not needed :P">
+      <created>1543572010581</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1543572010582</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31576000" />
+    <option name="totallyTimeSpent" value="32624000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1680" height="1027" extended-state="6" />
+    <frame x="0" y="23" width="1680" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16455697" />
@@ -430,6 +471,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="translate cubes instead of multiple instances... cause was not needed :P" />
+    <option name="LAST_COMMIT_MESSAGE" value="translate cubes instead of multiple instances... cause was not needed :P" />
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/gl-matrix.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -459,8 +504,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/3DTicTacToe.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="519" column="60" lean-forward="true" selection-start-line="519" selection-start-column="60" selection-end-line="519" selection-end-column="60" />
+        <state relative-caret-position="-687">
+          <caret line="200" lean-forward="true" selection-start-line="200" selection-end-line="200" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
