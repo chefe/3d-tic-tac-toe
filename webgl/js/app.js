@@ -204,13 +204,11 @@ var ctx = {
 };
 
 var player1 = {
-    color: [0.85, 0.71, 0.99], // Ball Colors
-    points: [[0,0,1], [1,1,-1], [-1,-1,1]]
+    color: [0.85, 0.71, 0.99] // Ball Colors
 };
 
 var player2 = {
-    color: [0.99, 0.85, 0.71], // Ball Colors
-    points: [[0,1,-1], [-1,-1,-1]]
+    color: [0.99, 0.85, 0.71] // Ball Colors
 };
 
 
@@ -434,9 +432,10 @@ function draw() {
         // Spheres
         gl.uniform1i(ctx.uEnableLightingId, true);
 
-        player1.points.forEach(function(element) {
+        Game.playerData[0].forEach(function(element) {
+            console.log(element);
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-            mat4.translate(modelMatrix,modelMatrix, element);
+            mat4.translate(modelMatrix,modelMatrix, element[0]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
             mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
             mat3.normalFromMat4(normalMatrix, modelViewMatrix);
@@ -445,9 +444,10 @@ function draw() {
             solidSphere.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, ctx.aNormalVertexId, player1.color);
         });
 
-        player2.points.forEach(function(element) {
+        Game.playerData[1].forEach(function(element) {
+            console.log(element[0]);
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-            mat4.translate(modelMatrix,modelMatrix, element);
+            mat4.translate(modelMatrix,modelMatrix, element[0]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
             mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
             mat3.normalFromMat4(normalMatrix, modelViewMatrix);
@@ -566,9 +566,6 @@ function draw() {
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
-
-
-
 }
 
 window.onload = function () {
