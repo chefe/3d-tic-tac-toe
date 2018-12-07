@@ -433,7 +433,6 @@ function draw() {
         gl.uniform1i(ctx.uEnableLightingId, true);
 
         Game.playerData[0].forEach(function(element) {
-            console.log(element);
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
             mat4.translate(modelMatrix,modelMatrix, element[0]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
@@ -445,7 +444,6 @@ function draw() {
         });
 
         Game.playerData[1].forEach(function(element) {
-            console.log(element[0]);
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
             mat4.translate(modelMatrix,modelMatrix, element[0]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
@@ -466,102 +464,22 @@ function draw() {
         mat4.copy(modelMatrixTmp, modelMatrix);
         gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
 
-        // draw middle cube
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
+        mat4.translate(modelMatrixTmp, modelMatrix, Game.activeCube);
+        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
+        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, [0.7, 0, 0, 0.7]);
 
-
-        // middle
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,-1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,0,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,-1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,-1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,0,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-
-        // back
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,-1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,0,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,-1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,0,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,-1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,0,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-
-        // front
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,0,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-0,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,0,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
+        for (var x = -1; x < 2; x++) {
+            for (var y = -1; y < 2; y++) {
+                for (var z = -1; z < 2; z++) {
+                    let isActiveCube = Game.activeCube[0] == x && Game.activeCube[1] == y &&  Game.activeCube[2] == z;
+                    if (isActiveCube == false) {
+                        mat4.translate(modelMatrixTmp, modelMatrix, [x,y,z]);
+                        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
+                        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, [0.7, 0.7, 0.7, 0.7]);
+                    }
+                }
+            }
+        }
 
         requestAnimationFrame(loop);
     };
