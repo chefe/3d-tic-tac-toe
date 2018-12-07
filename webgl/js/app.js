@@ -53,7 +53,85 @@ var Game = {
 
     },
     hasWon: function () {
+        if (this.hasPlayerWon(0)) {
+            setTimeout(function() { alert("Player 1 is the winner"); }, 100);
+            return true;
+        }
 
+        if (this.hasPlayerWon(1)) {
+            setTimeout(function() { alert("Player 2 is the winner"); }, 100);
+            return true;
+        }
+
+        return false;
+    },
+    hasPlayerWon: function (player) {
+        var played = Array(27).fill(0);
+        this.playerData[player].forEach(function (element) {
+            let index = (element[0][0] + 1) + 3 * (element[0][1] + 1) + 9 * (element[0][2] + 1);
+            played[index] = 1;
+        });
+
+        var won = false;
+
+        // check if has line in first axis
+        for (var i = 0; i < 9; i++) {
+            if (played[i] == 1 && played[i + 9] && played[i + 18]) {
+                won = true;
+            }
+        }
+
+        // check if has line in second axis
+        for (var i = 0; i < 9; i++) {
+            if (played[i * 3] == 1 && played[i * 3 + 1] && played[i * 3 + 2]) {
+                won = true;
+            }
+        }
+
+        // check if has line in third axis
+        for (var i = 0; i < 9; i++) {
+            let base = Math.floor(i / 3) * 9 + i % 3;
+            if (played[base] == 1 && played[base + 3] && played[base + 6]) {
+                won = true;
+            }
+        }
+        
+        // check if has diagonal line throug cube
+        [0, 2, 6, 8].forEach(function (n) {
+            if (played[n] == 1 && played[13] == 1 && played[26 - n] == 1) {
+                won = true;
+            }
+        })
+
+        // check if has line in first axis planes
+        for (var i = 0; i < 3; i++) {
+            let base = i * 9;
+            let check1 = played[base] == 1 && played[base + 4] == 1 && played[base + 8] == 1;
+            let check2 = played[base + 2] == 1 && played[base + 4] == 1 && played[base + 6] == 1;
+            if (check1 || check2) {
+                won = true;
+            }
+        }
+
+        // check if has line in second axis planes
+        for (var i = 0; i < 3; i++) {
+            let check1 = played[i] == 1 && played[i + 12] == 1 && played[i + 24] == 1;
+            let check2 = played[i + 6] == 1 && played[i + 12] == 1 && played[i + 18] == 1;
+            if (check1 || check2) {
+                won = true;
+            }
+        }
+
+        // check if has line in third axis planes
+        for (var i = 0; i < 3; i++) {
+            let check1 = played[i * 3] == 1 && played[10 + i * 3] == 1 && played[20 + i * 3] == 1;
+            let check2 = played[2 + i * 3] == 1 && played[10 + i * 3] == 1 && played[18 + i * 3] == 1;
+            if (check1 || check2) {
+                won = true;
+            }
+        }
+
+        return won;
     },
     player: function (number) {
 
@@ -285,6 +363,8 @@ function startup() {
                 (Game.activePlayer - 1) ? Game.activePlayer = 1 : Game.activePlayer = 2;
                 Game.reservedCubes.push(newArray[0]);
 
+                Game.hasWon();
+
                 break;
 
             case 'KeyH':
@@ -420,7 +500,7 @@ function draw() {
         if (Game.withRotation) {
             window.cubeRotationAngle = (window.cubeRotationAngle + 0.05) % (2 * Math.PI)
         }
-        
+
         var angel = window.cubeRotationAngle;
 
         gl.clearColor(1, 1, 1, 1); // Background
