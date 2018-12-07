@@ -412,19 +412,16 @@ function draw() {
     var wiredCube_mmm = new WireFrameCube(gl, vertices.mmm);
     var solidSphere = new SolidSphere(gl, 60, 60);
 
-    var angel = 0;
+    window.cubeRotationAngle = 0;
     var identityMatrix = mat4.create();
     mat4.identity(identityMatrix);
 
-    window.rrrrrr = 0;
-
     var loop = function() {
-
         if (Game.withRotation) {
-
-            angel = performance.now() / 1000 / 6 * 2 * Math.PI;
-
+            window.cubeRotationAngle = (window.cubeRotationAngle + 0.05) % (2 * Math.PI)
         }
+        
+        var angel = window.cubeRotationAngle;
 
         gl.clearColor(1, 1, 1, 1); // Background
         gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
