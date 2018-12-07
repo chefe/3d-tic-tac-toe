@@ -546,7 +546,7 @@ window.onload = function () {
 
         Loading.toggle(false);
         //Game.audio('ON');
-        Game.withRotation = false;
+        Game.withRotation = true;
         startup();
 
         event.target.blur();
