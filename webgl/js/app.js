@@ -340,7 +340,7 @@ function initGL() {
     ctx.shaderProgram = loadAndCompileShaders(gl, 'shader/VertexShader.glsl', 'shader/FragmentShader.glsl');
     setUpAttributesAndUniforms();
     setUpBuffers();
-    gl.clearColor(0.5, 0.5, 0.5, 1);
+    gl.clearColor(1, 1, 1, 1);
 
     // add more necessary commands here
 }
@@ -393,7 +393,7 @@ function draw() {
     var viewMatrix = mat4.create();
     var projectionMatrix = mat4.create();
     mat4.identity(modelMatrix);
-    mat4.lookAt(viewMatrix, [11,2,2], [0,0,2], [0,0,1]);
+    mat4.lookAt(viewMatrix, [10,-2,0], [0,-2,0], [0,0,1]);
     mat4.perspective(projectionMatrix, glMatrix.toRadian(45), gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000.0);
 
     gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
@@ -410,13 +410,14 @@ function draw() {
 
     // definition front
     var wiredCube_mmm = new WireFrameCube(gl, vertices.mmm);
-
     var solidSphere = new SolidSphere(gl, 60, 60);
-
 
     var angel = 0;
     var identityMatrix = mat4.create();
     mat4.identity(identityMatrix);
+
+    window.rrrrrr = 0;
+
     var loop = function() {
 
         if (Game.withRotation) {
@@ -433,7 +434,7 @@ function draw() {
 
         Game.playerData[0].forEach(function(element) {
             let [x, y, z] = element[0];
-            z += (x == Game.activeCube[0]) ? 4 : 0;
+            //y += (x == Game.activeCube[0]) ? 4 : 0;
 
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
             mat4.translate(modelMatrix,modelMatrix, [x, y, z]);
@@ -447,7 +448,7 @@ function draw() {
 
         Game.playerData[1].forEach(function(element) {
             let [x, y, z] = element[0];
-            z += (x == Game.activeCube[0]) ? 4 : 0;
+            //y += (x == Game.activeCube[0]) ? 4 : 0;
 
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
             mat4.translate(modelMatrix,modelMatrix, [x, y, z]);
@@ -461,10 +462,8 @@ function draw() {
         gl.uniform1i(ctx.uEnableLightingId, false);
 
 
-        // GRIDE
-
+        // GRID
         mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-
         var modelMatrixTmp = mat4.create();
         mat4.copy(modelMatrixTmp, modelMatrix);
         gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
@@ -478,17 +477,61 @@ function draw() {
             }
         }
 
+        // DRAW ONE LAYER REPRESENTATION
+        mat4.identity(modelMatrix);
+        mat4.identity(modelMatrixTmp);
+        drawGridCube([0, Game.activeCube[1], Game.activeCube[2]], false, modelMatrix, modelMatrixTmp, wiredCube_mmm, true);
+        for (var y = -1; y < 2; y++) {
+            for (var z = -1; z < 2; z++) {
+                drawGridCube([0, y, z], true, modelMatrix, modelMatrixTmp, wiredCube_mmm, true)
+            }
+        }
+
+        // Spheres
+        gl.uniform1i(ctx.uEnableLightingId, true);
+
+        Game.playerData[0].forEach(function(element) {
+            let [x, y, z] = element[0];
+            if (x == Game.activeCube[0]) {
+                mat4.identity(modelMatrix);
+                mat4.translate(modelMatrix,modelMatrix, [0, y - 5, z]);
+                gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
+                mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+                mat3.normalFromMat4(normalMatrix, modelViewMatrix);
+                gl.uniformMatrix3fv(ctx.uNormalMatrixId,false,normalMatrix);
+
+                solidSphere.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, ctx.aNormalVertexId, player1.color);
+            }
+        });
+
+        Game.playerData[1].forEach(function(element) {
+            let [x, y, z] = element[0];
+            if (x == Game.activeCube[0]) {
+                mat4.identity(modelMatrix);
+                mat4.translate(modelMatrix,modelMatrix, [0, y - 5, z]);
+                gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
+                mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+                mat3.normalFromMat4(normalMatrix, modelViewMatrix);
+                gl.uniformMatrix3fv(ctx.uNormalMatrixId,false,normalMatrix);
+
+                solidSphere.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, ctx.aNormalVertexId, player2.color);
+            }
+        });
+        gl.uniform1i(ctx.uEnableLightingId, false);
+
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
 }
 
-function drawGridCube(position, preventActiveCube, modelMatrix, modelMatrixTmp, wiredCube_mmm) {
+function drawGridCube(position, preventActiveCube, modelMatrix, modelMatrixTmp, wiredCube_mmm, isSideRepresentation=false) {
     let [x, y, z] = position;
-    let isActiveLayer = Game.activeCube[0] == x;
+    let isActiveLayer = Game.activeCube[0] == x || isSideRepresentation;
     let isActiveCube = isActiveLayer && Game.activeCube[1] == y &&  Game.activeCube[2] == z;
-    let color = isActiveCube ? [0.7, 0, 0, 0.7] : [0.7, 0.7, 0.7, 0.7];
-    let pos = [x, y, z + (isActiveLayer ? 4 : 0)];
+    var color = (isActiveLayer && !isSideRepresentation) ? [0.7, 0.3, 0, 0.7] : [0.7, 0.7, 0.7, 0.7];
+    color = isActiveCube ? [0.7, 0, 0, 0.7] : color;
+    let pos = [x, y, z];
+    pos[1] += isSideRepresentation ? -5 : 0;
 
     if (preventActiveCube == false || isActiveCube == false) {
         mat4.translate(modelMatrixTmp, modelMatrix, pos);
@@ -502,7 +545,7 @@ window.onload = function () {
     document.querySelector('#start-game').addEventListener('click', function (event) {
 
         Loading.toggle(false);
-        Game.audio('ON');
+        //Game.audio('ON');
         Game.withRotation = false;
         startup();
 
