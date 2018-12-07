@@ -393,8 +393,7 @@ function draw() {
     var viewMatrix = mat4.create();
     var projectionMatrix = mat4.create();
     mat4.identity(modelMatrix);
-    //mat4.translate(modelMatrix, modelMatrix, [-1,0,0]);
-    mat4.lookAt(viewMatrix, [6,2,0], [0,0,0], [0,0,1]);
+    mat4.lookAt(viewMatrix, [11,2,2], [0,0,2], [0,0,1]);
     mat4.perspective(projectionMatrix, glMatrix.toRadian(45), gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000.0);
 
     gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
@@ -426,15 +425,18 @@ function draw() {
 
         }
 
-        gl.clearColor(0.95, 0.96, 0.97, 1); // Background
+        gl.clearColor(1, 1, 1, 1); // Background
         gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
         // Spheres
         gl.uniform1i(ctx.uEnableLightingId, true);
 
         Game.playerData[0].forEach(function(element) {
+            let [x, y, z] = element[0];
+            z += (x == Game.activeCube[0]) ? 4 : 0;
+
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-            mat4.translate(modelMatrix,modelMatrix, element[0]);
+            mat4.translate(modelMatrix,modelMatrix, [x, y, z]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
             mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
             mat3.normalFromMat4(normalMatrix, modelViewMatrix);
@@ -444,8 +446,11 @@ function draw() {
         });
 
         Game.playerData[1].forEach(function(element) {
+            let [x, y, z] = element[0];
+            z += (x == Game.activeCube[0]) ? 4 : 0;
+
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-            mat4.translate(modelMatrix,modelMatrix, element[0]);
+            mat4.translate(modelMatrix,modelMatrix, [x, y, z]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
             mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
             mat3.normalFromMat4(normalMatrix, modelViewMatrix);
@@ -464,19 +469,11 @@ function draw() {
         mat4.copy(modelMatrixTmp, modelMatrix);
         gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
 
-        mat4.translate(modelMatrixTmp, modelMatrix, Game.activeCube);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, [0.7, 0, 0, 0.7]);
-
+        drawGridCube(Game.activeCube, false, modelMatrix, modelMatrixTmp, wiredCube_mmm);
         for (var x = -1; x < 2; x++) {
             for (var y = -1; y < 2; y++) {
                 for (var z = -1; z < 2; z++) {
-                    let isActiveCube = Game.activeCube[0] == x && Game.activeCube[1] == y &&  Game.activeCube[2] == z;
-                    if (isActiveCube == false) {
-                        mat4.translate(modelMatrixTmp, modelMatrix, [x,y,z]);
-                        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-                        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, [0.7, 0.7, 0.7, 0.7]);
-                    }
+                    drawGridCube([x, y, z], true, modelMatrix, modelMatrixTmp, wiredCube_mmm)
                 }
             }
         }
@@ -484,6 +481,20 @@ function draw() {
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
+}
+
+function drawGridCube(position, preventActiveCube, modelMatrix, modelMatrixTmp, wiredCube_mmm) {
+    let [x, y, z] = position;
+    let isActiveLayer = Game.activeCube[0] == x;
+    let isActiveCube = isActiveLayer && Game.activeCube[1] == y &&  Game.activeCube[2] == z;
+    let color = isActiveCube ? [0.7, 0, 0, 0.7] : [0.7, 0.7, 0.7, 0.7];
+    let pos = [x, y, z + (isActiveLayer ? 4 : 0)];
+
+    if (preventActiveCube == false || isActiveCube == false) {
+        mat4.translate(modelMatrixTmp, modelMatrix, pos);
+        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
+        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, color);
+    }
 }
 
 window.onload = function () {
