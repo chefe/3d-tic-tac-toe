@@ -62,12 +62,26 @@ var Game = {
     },
     hasWon: function () {
         if (this.hasPlayerWon(0)) {
-            setTimeout(function() { alert("Player 1 is the winner"); }, 100);
+            setTimeout(function() { 
+                var winnerDisplay = document.querySelector('#winnerDisplay');
+                winnerDisplay.innerHTML = 'Player 1 is the winner';
+
+                var winnerPopup = document.querySelector('#winnerPopup');
+                winnerPopup.classList.remove('hidden');
+                winnerPopup.classList.add('flex');
+            }, 100);
             return true;
         }
 
         if (this.hasPlayerWon(1)) {
-            setTimeout(function() { alert("Player 2 is the winner"); }, 100);
+            setTimeout(function() { 
+                var winnerDisplay = document.querySelector('#winnerDisplay');
+                winnerDisplay.innerHTML = 'Player 2 is the winner';
+
+                var winnerPopup = document.querySelector('#winnerPopup');
+                winnerPopup.classList.remove('hidden');
+                winnerPopup.classList.add('flex');
+            }, 100);
             return true;
         }
 
