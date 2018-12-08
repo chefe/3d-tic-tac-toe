@@ -321,6 +321,7 @@ function startup() {
     document.onkeypress = function (event) {
 
         var activeCubeDisplay = document.querySelector('.activeCube');
+        var activePlayerDisplay = document.querySelector('.activePlayer');
         var playerOneStats    = document.querySelector('.playerOneStats');
         var playerTwoStats    = document.querySelector('.playerTwoStats');
 
@@ -385,6 +386,7 @@ function startup() {
         }
 
         activeCubeDisplay.innerHTML = Game.activeCube[0] + ", " + Game.activeCube[1] + ", " + Game.activeCube[2];
+        activePlayerDisplay.innerHTML = "Player " + Game.activePlayer;
 
         if (!playerOneStats) { return false; }
 
