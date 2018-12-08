@@ -16,6 +16,14 @@ var Game = {
     reservedCubes: [],
     withRotation: false,
 
+    resetGame: function() {
+        this.activeCube = [0, 0, 0],
+        this.activePlayer = 1;
+        this.playerData = [[], []];
+        this.reservedCubes = [];
+
+        this.updateUIState();
+    },
     activeCubeIsReserved: function () {
 
           for (var i = 0; i < this.reservedCubes.length; i++) {
@@ -192,8 +200,24 @@ var Game = {
 
         return this.activeCube[2] += 1;
 
-    }
+    },
+    updateUIState: function () {
+        var activeCubeDisplay = document.querySelector('.activeCube');
+        var activePlayerDisplay = document.querySelector('.activePlayer');
+        var playerOneStats = document.querySelector('.playerOneStats');
+        var playerTwoStats = document.querySelector('.playerTwoStats');
+      
+        activeCubeDisplay.innerHTML =  Game.activeCube.join(', ');
+        activePlayerDisplay.innerHTML = 'Player ' + Game.activePlayer;
 
+        playerOneStats.innerHTML = Game.player(1).map(function (cube) { 
+            return '<li class="mt-2"><code>' + cube + '</code></li>';
+        }).join('');
+
+        playerTwoStats.innerHTML = Game.player(2).map(function (cube) { 
+            return '<li class="mt-2"><code>' + cube + '</code></li>';
+        }).join('');
+    }
 };
 
 var Instructions = {
@@ -320,10 +344,7 @@ function startup() {
 
     document.onkeypress = function (event) {
 
-        var activeCubeDisplay = document.querySelector('.activeCube');
-        var activePlayerDisplay = document.querySelector('.activePlayer');
-        var playerOneStats    = document.querySelector('.playerOneStats');
-        var playerTwoStats    = document.querySelector('.playerTwoStats');
+        
 
         event.stopImmediatePropagation();
         event.stopPropagation();
@@ -379,36 +400,7 @@ function startup() {
                 break;
         }
 
-        if (!activeCubeDisplay) {
-
-            return false;
-
-        }
-
-        activeCubeDisplay.innerHTML = Game.activeCube[0] + ", " + Game.activeCube[1] + ", " + Game.activeCube[2];
-        activePlayerDisplay.innerHTML = "Player " + Game.activePlayer;
-
-        if (!playerOneStats) { return false; }
-
-        playerOneStats.innerHTML = "";
-        playerTwoStats.innerHTML = "";
-
-        for (var i = 0; i < Game.player(1).length; i ++) {
-
-            var li1 = document.createElement('li');
-            li1.innerHTML = "<li class='mt-2'><code>" + Game.player(1)[i] + "</code></li>";
-            playerOneStats.appendChild(li1);
-
-        }
-
-        for (var j = 0; j < Game.player(2).length; j ++) {
-
-            var li2 = document.createElement('li');
-            li2.innerHTML = "<li class='mt-2'><code>" + Game.player(2)[j] + "</code></li>";
-            playerTwoStats.appendChild(li2);
-
-        }
-
+        Game.updateUIState();
     };
 
 }
