@@ -16,6 +16,14 @@ var Game = {
     reservedCubes: [],
     withRotation: false,
 
+    resetGame: function() {
+        this.activeCube = [0, 0, 0],
+        this.activePlayer = 1;
+        this.playerData = [[], []];
+        this.reservedCubes = [];
+
+        this.updateUIState();
+    },
     activeCubeIsReserved: function () {
 
           for (var i = 0; i < this.reservedCubes.length; i++) {
@@ -53,7 +61,99 @@ var Game = {
 
     },
     hasWon: function () {
+        if (this.hasPlayerWon(0)) {
+            setTimeout(function() { 
+                var winnerDisplay = document.querySelector('#winnerDisplay');
+                winnerDisplay.innerHTML = 'Player 1 is the winner';
 
+                var winnerPopup = document.querySelector('#winnerPopup');
+                winnerPopup.classList.remove('hidden');
+                winnerPopup.classList.add('flex');
+            }, 100);
+            return true;
+        }
+
+        if (this.hasPlayerWon(1)) {
+            setTimeout(function() { 
+                var winnerDisplay = document.querySelector('#winnerDisplay');
+                winnerDisplay.innerHTML = 'Player 2 is the winner';
+
+                var winnerPopup = document.querySelector('#winnerPopup');
+                winnerPopup.classList.remove('hidden');
+                winnerPopup.classList.add('flex');
+            }, 100);
+            return true;
+        }
+
+        return false;
+    },
+    hasPlayerWon: function (player) {
+        var played = Array(27).fill(0);
+        this.playerData[player].forEach(function (element) {
+            let index = (element[0][0] + 1) + 3 * (element[0][1] + 1) + 9 * (element[0][2] + 1);
+            played[index] = 1;
+        });
+
+        var won = false;
+
+        // check if has line in first axis
+        for (var i = 0; i < 9; i++) {
+            if (played[i] == 1 && played[i + 9] && played[i + 18]) {
+                won = true;
+            }
+        }
+
+        // check if has line in second axis
+        for (var i = 0; i < 9; i++) {
+            if (played[i * 3] == 1 && played[i * 3 + 1] && played[i * 3 + 2]) {
+                won = true;
+            }
+        }
+
+        // check if has line in third axis
+        for (var i = 0; i < 9; i++) {
+            let base = Math.floor(i / 3) * 9 + i % 3;
+            if (played[base] == 1 && played[base + 3] && played[base + 6]) {
+                won = true;
+            }
+        }
+        
+        // check if has diagonal line throug cube
+        [0, 2, 6, 8].forEach(function (n) {
+            if (played[n] == 1 && played[13] == 1 && played[26 - n] == 1) {
+                won = true;
+            }
+        })
+
+        // check if has line in first axis planes
+        for (var i = 0; i < 3; i++) {
+            let base = i * 9;
+            let check1 = played[base] == 1 && played[base + 4] == 1 && played[base + 8] == 1;
+            let check2 = played[base + 2] == 1 && played[base + 4] == 1 && played[base + 6] == 1;
+            if (check1 || check2) {
+                won = true;
+            }
+        }
+
+        // check if has line in second axis planes
+        for (var i = 0; i < 3; i++) {
+            let check1 = played[i] == 1 && played[i + 12] == 1 && played[i + 24] == 1;
+            let check2 = played[i + 6] == 1 && played[i + 12] == 1 && played[i + 18] == 1;
+            if (check1 || check2) {
+                won = true;
+            }
+        }
+
+        // check if has line in third axis planes
+        for (var i = 0; i < 3; i++) {
+            let check1 = played[i * 3] == 1 && played[10 + i * 3] == 1 && played[20 + i * 3] == 1;
+            let check2 = played[2 + i * 3] == 1 && played[10 + i * 3] == 1 && played[18 + i * 3] == 1;
+            if (check1 || check2) {
+                won = true;
+            }
+        }
+
+        return won;
     },
     player: function (number) {
 
@@ -114,8 +214,24 @@ var Game = {
 
         return this.activeCube[2] += 1;
 
-    }
+    },
+    updateUIState: function () {
+        var activeCubeDisplay = document.querySelector('.activeCube');
+        var activePlayerDisplay = document.querySelector('.activePlayer');
+        var playerOneStats = document.querySelector('.playerOneStats');
+        var playerTwoStats = document.querySelector('.playerTwoStats');
+      
+        activeCubeDisplay.innerHTML =  Game.activeCube.join(', ');
+        activePlayerDisplay.innerHTML = 'Player ' + Game.activePlayer;
 
+        playerOneStats.innerHTML = Game.player(1).map(function (cube) { 
+            return '<li class="mt-2"><code>' + cube + '</code></li>';
+        }).join('');
+
+        playerTwoStats.innerHTML = Game.player(2).map(function (cube) { 
+            return '<li class="mt-2"><code>' + cube + '</code></li>';
+        }).join('');
+    }
 };
 
 var Instructions = {
@@ -204,13 +320,11 @@ var ctx = {
 };
 
 var player1 = {
-    color: [0.85, 0.71, 0.99], // Ball Colors
-    points: [[0,0,1], [1,1,-1], [-1,-1,1]]
+    color: [0.85, 0.71, 0.99] // Ball Colors
 };
 
 var player2 = {
-    color: [0.99, 0.85, 0.71], // Ball Colors
-    points: [[0,1,-1], [-1,-1,-1]]
+    color: [0.99, 0.85, 0.71] // Ball Colors
 };
 
 
@@ -244,9 +358,7 @@ function startup() {
 
     document.onkeypress = function (event) {
 
-        var activeCubeDisplay = document.querySelector('.activeCube');
-        var playerOneStats    = document.querySelector('.playerOneStats');
-        var playerTwoStats    = document.querySelector('.playerTwoStats');
+        
 
         event.stopImmediatePropagation();
         event.stopPropagation();
@@ -287,6 +399,8 @@ function startup() {
                 (Game.activePlayer - 1) ? Game.activePlayer = 1 : Game.activePlayer = 2;
                 Game.reservedCubes.push(newArray[0]);
 
+                Game.hasWon();
+
                 break;
 
             case 'KeyH':
@@ -300,35 +414,7 @@ function startup() {
                 break;
         }
 
-        if (!activeCubeDisplay) {
-
-            return false;
-
-        }
-
-        activeCubeDisplay.innerHTML = Game.activeCube[0] + ", " + Game.activeCube[1] + ", " + Game.activeCube[2];
-
-        if (!playerOneStats) { return false; }
-
-        playerOneStats.innerHTML = "";
-        playerTwoStats.innerHTML = "";
-
-        for (var i = 0; i < Game.player(1).length; i ++) {
-
-            var li1 = document.createElement('li');
-            li1.innerHTML = "<li class='mt-2'><code>" + Game.player(1)[i] + "</code></li>";
-            playerOneStats.appendChild(li1);
-
-        }
-
-        for (var j = 0; j < Game.player(2).length; j ++) {
-
-            var li2 = document.createElement('li');
-            li2.innerHTML = "<li class='mt-2'><code>" + Game.player(2)[j] + "</code></li>";
-            playerTwoStats.appendChild(li2);
-
-        }
-
+        Game.updateUIState();
     };
 
 }
@@ -342,7 +428,7 @@ function initGL() {
     ctx.shaderProgram = loadAndCompileShaders(gl, 'shader/VertexShader.glsl', 'shader/FragmentShader.glsl');
     setUpAttributesAndUniforms();
     setUpBuffers();
-    gl.clearColor(0.5, 0.5, 0.5, 1);
+    gl.clearColor(1, 1, 1, 1);
 
     // add more necessary commands here
 }
@@ -395,8 +481,7 @@ function draw() {
     var viewMatrix = mat4.create();
     var projectionMatrix = mat4.create();
     mat4.identity(modelMatrix);
-    //mat4.translate(modelMatrix, modelMatrix, [-1,0,0]);
-    mat4.lookAt(viewMatrix, [6,2,0], [0,0,0], [0,0,1]);
+    mat4.lookAt(viewMatrix, [10,-2,0], [0,-2,0], [0,0,1]);
     mat4.perspective(projectionMatrix, glMatrix.toRadian(45), gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000.0);
 
     gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
@@ -413,30 +498,31 @@ function draw() {
 
     // definition front
     var wiredCube_mmm = new WireFrameCube(gl, vertices.mmm);
-
     var solidSphere = new SolidSphere(gl, 60, 60);
 
-
-    var angel = 0;
+    window.cubeRotationAngle = 0;
     var identityMatrix = mat4.create();
     mat4.identity(identityMatrix);
+
     var loop = function() {
-
         if (Game.withRotation) {
-
-            angel = performance.now() / 1000 / 6 * 2 * Math.PI;
-
+            window.cubeRotationAngle = (window.cubeRotationAngle + 0.05) % (2 * Math.PI)
         }
 
-        gl.clearColor(0.95, 0.96, 0.97, 1); // Background
+        var angel = window.cubeRotationAngle;
+
+        gl.clearColor(1, 1, 1, 1); // Background
         gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
         // Spheres
         gl.uniform1i(ctx.uEnableLightingId, true);
 
-        player1.points.forEach(function(element) {
+        Game.playerData[0].forEach(function(element) {
+            let [x, y, z] = element[0];
+            //y += (x == Game.activeCube[0]) ? 4 : 0;
+
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-            mat4.translate(modelMatrix,modelMatrix, element);
+            mat4.translate(modelMatrix,modelMatrix, [x, y, z]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
             mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
             mat3.normalFromMat4(normalMatrix, modelViewMatrix);
@@ -445,9 +531,12 @@ function draw() {
             solidSphere.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, ctx.aNormalVertexId, player1.color);
         });
 
-        player2.points.forEach(function(element) {
+        Game.playerData[1].forEach(function(element) {
+            let [x, y, z] = element[0];
+            //y += (x == Game.activeCube[0]) ? 4 : 0;
+
             mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-            mat4.translate(modelMatrix,modelMatrix, element);
+            mat4.translate(modelMatrix,modelMatrix, [x, y, z]);
             gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
             mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
             mat3.normalFromMat4(normalMatrix, modelViewMatrix);
@@ -458,117 +547,82 @@ function draw() {
         gl.uniform1i(ctx.uEnableLightingId, false);
 
 
-        // GRIDE
-
+        // GRID
         mat4.rotate(modelMatrix, identityMatrix, angel, [0,0,1]);
-
         var modelMatrixTmp = mat4.create();
         mat4.copy(modelMatrixTmp, modelMatrix);
         gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
 
-        // draw middle cube
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
+        drawGridCube(Game.activeCube, false, modelMatrix, modelMatrixTmp, wiredCube_mmm);
+        for (var x = -1; x < 2; x++) {
+            for (var y = -1; y < 2; y++) {
+                for (var z = -1; z < 2; z++) {
+                    drawGridCube([x, y, z], true, modelMatrix, modelMatrixTmp, wiredCube_mmm)
+                }
+            }
+        }
 
+        // DRAW ONE LAYER REPRESENTATION
+        mat4.identity(modelMatrix);
+        mat4.identity(modelMatrixTmp);
+        drawGridCube([0, Game.activeCube[1], Game.activeCube[2]], false, modelMatrix, modelMatrixTmp, wiredCube_mmm, true);
+        for (var y = -1; y < 2; y++) {
+            for (var z = -1; z < 2; z++) {
+                drawGridCube([0, y, z], true, modelMatrix, modelMatrixTmp, wiredCube_mmm, true)
+            }
+        }
 
-        // middle
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,-1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,0,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
+        // Spheres
+        gl.uniform1i(ctx.uEnableLightingId, true);
 
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,-1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
+        Game.playerData[0].forEach(function(element) {
+            let [x, y, z] = element[0];
+            if (x == Game.activeCube[0]) {
+                mat4.identity(modelMatrix);
+                mat4.translate(modelMatrix,modelMatrix, [0, y - 5, z]);
+                gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
+                mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+                mat3.normalFromMat4(normalMatrix, modelViewMatrix);
+                gl.uniformMatrix3fv(ctx.uNormalMatrixId,false,normalMatrix);
 
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,-1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,0,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [0,1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
+                solidSphere.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, ctx.aNormalVertexId, player1.color);
+            }
+        });
 
+        Game.playerData[1].forEach(function(element) {
+            let [x, y, z] = element[0];
+            if (x == Game.activeCube[0]) {
+                mat4.identity(modelMatrix);
+                mat4.translate(modelMatrix,modelMatrix, [0, y - 5, z]);
+                gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
+                mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+                mat3.normalFromMat4(normalMatrix, modelViewMatrix);
+                gl.uniformMatrix3fv(ctx.uNormalMatrixId,false,normalMatrix);
 
-        // back
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,-1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,0,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,-1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,0,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,-1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,0,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [-1,1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-
-        // front
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,0,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,1,1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-0,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,1,0]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,-1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,0,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-        mat4.translate(modelMatrixTmp, modelMatrix, [1,1,-1]);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId);
-
+                solidSphere.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, ctx.aNormalVertexId, player2.color);
+            }
+        });
+        gl.uniform1i(ctx.uEnableLightingId, false);
 
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
+}
 
+function drawGridCube(position, preventActiveCube, modelMatrix, modelMatrixTmp, wiredCube_mmm, isSideRepresentation=false) {
+    let [x, y, z] = position;
+    let isActiveLayer = Game.activeCube[0] == x || isSideRepresentation;
+    let isActiveCube = isActiveLayer && Game.activeCube[1] == y &&  Game.activeCube[2] == z;
+    var color = (isActiveLayer && !isSideRepresentation) ? [0.7, 0.3, 0, 0.7] : [0.7, 0.7, 0.7, 0.7];
+    color = isActiveCube ? [0.7, 0, 0, 0.7] : color;
+    let pos = [x, y, z];
+    pos[1] += isSideRepresentation ? -5 : 0;
 
-
+    if (preventActiveCube == false || isActiveCube == false) {
+        mat4.translate(modelMatrixTmp, modelMatrix, pos);
+        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
+        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, color);
+    }
 }
 
 window.onload = function () {
@@ -576,8 +630,8 @@ window.onload = function () {
     document.querySelector('#start-game').addEventListener('click', function (event) {
 
         Loading.toggle(false);
-        Game.audio('ON');
-        Game.withRotation = false;
+        //Game.audio('ON');
+        Game.withRotation = true;
         startup();
 
         event.target.blur();

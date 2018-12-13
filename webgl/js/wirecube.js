@@ -19,26 +19,15 @@ function WireFrameCube(gl, vertices) {
     }
 
 
-    function defineColor(gl) {
-
-        var color = [
-            // back
-            0.7, 0.7, 0.7, 0.7,
-            0.7, 0.7, 0.7, 0.7,
-            0.7, 0.7, 0.7, 0.7,
-            0.7, 0.7, 0.7, 0.7,
-
-            // front
-            0.7, 0.7, 0.7, 0.7,
-            0.7, 0.7, 0.7, 0.7,
-            0.7, 0.7, 0.7, 0.7,
-            0.7, 0.7, 0.7, 0.7
-
-        ];
+    function defineColor(gl, color) {
+        var colors = [];
+        for (var x = 0; x < 8; x++) {
+            colors.push(...color);
+        }
 
         var buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
         return buffer;
     }
@@ -71,15 +60,14 @@ function WireFrameCube(gl, vertices) {
 
     return {
         bufferVertices: defineVertices(gl, vertices),
-        bufferColor: defineColor(gl),
         bufferEdges: defineEdges(gl),
-        draw: function(gl, aVertexPositionId, aColorPositionId) {
+        draw: function(gl, aVertexPositionId, aColorPositionId, color) {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferVertices);
             gl.vertexAttribPointer(aVertexPositionId, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(aVertexPositionId);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferColor);
+            gl.bindBuffer(gl.ARRAY_BUFFER, defineColor(gl, color));
             gl.vertexAttribPointer(aColorPositionId, 4, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(aColorPositionId);
 
