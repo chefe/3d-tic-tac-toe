@@ -506,7 +506,7 @@ function draw() {
 
     var loop = function() {
         if (Game.withRotation) {
-            window.cubeRotationAngle = (window.cubeRotationAngle + 0.05) % (2 * Math.PI)
+            window.cubeRotationAngle = (window.cubeRotationAngle + 0.02) % (2 * Math.PI)
         }
 
         var angel = window.cubeRotationAngle;
@@ -553,11 +553,15 @@ function draw() {
         mat4.copy(modelMatrixTmp, modelMatrix);
         gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrix);
 
-        drawGridCube(Game.activeCube, false, modelMatrix, modelMatrixTmp, wiredCube_mmm);
-        for (var x = -1; x < 2; x++) {
-            for (var y = -1; y < 2; y++) {
-                for (var z = -1; z < 2; z++) {
-                    drawGridCube([x, y, z], true, modelMatrix, modelMatrixTmp, wiredCube_mmm)
+        for (var x = 0; x < 3; x++) {
+            for (var y = 0; y < 3; y++) {
+                for (var z = 0; z < 3; z++) {
+                    let pos = [
+                        ((x + Game.activeCube[0] + 1) % 3) - 1, 
+                        ((y + Game.activeCube[1] + 1) % 3) - 1, 
+                        ((z + Game.activeCube[2] + 1) % 3) - 1
+                    ];
+                    drawGridCube(pos, modelMatrix, modelMatrixTmp, wiredCube_mmm)
                 }
             }
         }
@@ -565,10 +569,14 @@ function draw() {
         // DRAW ONE LAYER REPRESENTATION
         mat4.identity(modelMatrix);
         mat4.identity(modelMatrixTmp);
-        drawGridCube([0, Game.activeCube[1], Game.activeCube[2]], false, modelMatrix, modelMatrixTmp, wiredCube_mmm, true);
-        for (var y = -1; y < 2; y++) {
-            for (var z = -1; z < 2; z++) {
-                drawGridCube([0, y, z], true, modelMatrix, modelMatrixTmp, wiredCube_mmm, true)
+        for (var y = 0; y < 3; y++) {
+            for (var z = 0; z < 3; z++) {
+                let pos = [
+                    0, 
+                    ((y + Game.activeCube[1] + 1) % 3) - 1, 
+                    ((z + Game.activeCube[2] + 1) % 3) - 1
+                ];
+                drawGridCube(pos, modelMatrix, modelMatrixTmp, wiredCube_mmm, true)
             }
         }
 
@@ -609,20 +617,18 @@ function draw() {
     requestAnimationFrame(loop);
 }
 
-function drawGridCube(position, preventActiveCube, modelMatrix, modelMatrixTmp, wiredCube_mmm, isSideRepresentation=false) {
+function drawGridCube(position, modelMatrix, modelMatrixTmp, wiredCube_mmm, isSideRepresentation=false) {
     let [x, y, z] = position;
     let isActiveLayer = Game.activeCube[0] == x || isSideRepresentation;
     let isActiveCube = isActiveLayer && Game.activeCube[1] == y &&  Game.activeCube[2] == z;
-    var color = (isActiveLayer && !isSideRepresentation) ? [0.7, 0.3, 0, 0.7] : [0.7, 0.7, 0.7, 0.7];
+    var color = (isActiveLayer && !isSideRepresentation) ? [0.0, 0.0, 0.3, 0.7] : [0.7, 0.7, 0.7, 0.7];
     color = isActiveCube ? [0.7, 0, 0, 0.7] : color;
     let pos = [x, y, z];
     pos[1] += isSideRepresentation ? -5 : 0;
 
-    if (preventActiveCube == false || isActiveCube == false) {
-        mat4.translate(modelMatrixTmp, modelMatrix, pos);
-        gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
-        wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, color);
-    }
+    mat4.translate(modelMatrixTmp, modelMatrix, pos);
+    gl.uniformMatrix4fv(ctx.uModelMatrixId, false, modelMatrixTmp);
+    wiredCube_mmm.draw(gl, ctx.aVertexPositionId, ctx.aColorPositionId, color);
 }
 
 window.onload = function () {
